@@ -39,10 +39,7 @@ type RunOptions = {
 
 /**
  * In-memory export engine used by the API and unit tests.
- *
- * Known defect (do not "fix" casually — this is the pstack practice bug):
- * On retry after a mid-run failure, the runner reuses the existing CsvBuffer
- * and rewrites every order from index 0, which duplicates earlier rows.
+ * Each run attempt starts from a clean CSV buffer so retries do not duplicate rows.
  */
 export class ExportEngine {
   private jobs = new Map<string, ExportJob>();
@@ -94,12 +91,12 @@ export class ExportEngine {
     job.error = null;
     job.updatedAt = new Date().toISOString();
 
+    // Retry rewrites the full export from scratch; clear so prior attempt rows
+    // are not still sitting in the buffer (laziness-protocol: smallest fix).
     const buffer = this.buffers.get(jobId) ?? new CsvBuffer();
+    buffer.clear();
     this.buffers.set(jobId, buffer);
 
-    // BUG: every attempt writes the full order list into the same buffer.
-    // A correct implementation would either clear the buffer on retry, or
-    // resume from a durable cursor without rewriting already-emitted rows.
     for (let i = 0; i < ORDERS.length; i++) {
       if (job.cancelled) {
         job.status = "cancelled";
@@ -133,7 +130,7 @@ export class ExportEngine {
     return job;
   }
 
-  /** Re-run a failed job. This is where the duplicate-row bug shows up. */
+  /** Re-run a failed job from a clean CSV buffer. */
   retry(jobId: string): ExportJob {
     const job = this.require(jobId);
     if (job.status !== "failed") {

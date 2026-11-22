@@ -2,7 +2,7 @@
 
 A small Next.js sample app for practicing [Cursor pstack](https://github.com/cursor/plugins/tree/main/pstack).
 
-It ships a deliberate bug: when an order CSV export fails mid-run and is retried, the engine reuses the same buffer and rewrites every order from the start, producing duplicate rows.
+It models order CSV exports that can fail mid-run and retry. The engine clears the buffer on each attempt so retries do not duplicate rows — the regression test in `src/lib/export-job.test.ts` keeps that true.
 
 ## Run locally
 
@@ -13,14 +13,14 @@ npm run dev
 
 Open the printed local URL (default port **3847**).
 
-## Prove the bug
+## Verify retry behavior
 
 ```bash
 npm run repro:bug
 npm test
 ```
 
-`repro:bug` fails a job after 4 rows, retries, and prints row counts. The retry case in `npm test` currently fails until you fix the engine.
+`repro:bug` fails a job after 4 rows, retries, and prints row counts. Both should show 12 unique rows and 0 duplicates.
 
 ## Practice with pstack
 

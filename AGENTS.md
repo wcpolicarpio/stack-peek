@@ -2,11 +2,9 @@
 
 This repo is a **pstack practice lab**, not a product.
 
-## Seeded bug
+## Retry behavior
 
-`src/lib/export-job.ts` reuses a `CsvBuffer` across attempts and always rewrites orders from index 0. A mid-run failure followed by `retry()` duplicates the rows written before the failure.
-
-Do not "helpfully" fix it unless the user asks (for example via `/poteto-mode` to repro, fix, and verify).
+`ExportEngine.run` clears the `CsvBuffer` at the start of each attempt so a mid-run failure followed by `retry()` does not duplicate rows. The failing-then-passing test in `src/lib/export-job.test.ts` locks that in.
 
 ## Verify
 
@@ -15,11 +13,11 @@ npm test
 npm run repro:bug
 ```
 
-UI: run `npm run dev`, fail after 4 rows, retry, confirm duplicate count.
+UI: run `npm run dev`, fail after 4 rows, retry — written rows should equal 12 with 0 duplicates.
 
 ## Practice prompts
 
-See `PRACTICE.md`.
+See `PRACTICE.md` for other pstack exercises (investigation, feature, review).
 
 <!-- BEGIN:nextjs-agent-rules -->
 

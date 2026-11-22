@@ -131,12 +131,11 @@ export function ExportLab() {
           Export Lab
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-          A tiny order-export service with a seeded mid-run retry bug. Use it to
-          practice{" "}
+          A tiny order-export service for practicing{" "}
           <code className="rounded bg-muted px-1.5 py-0.5 text-sm">
             /poteto-mode
           </code>
-          : repro first, then fix and verify.
+          . Fail mid-run, retry, and confirm the CSV has no duplicate rows.
         </p>
       </header>
 
@@ -178,10 +177,10 @@ export function ExportLab() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Reproduce the bug</CardTitle>
+          <CardTitle>Fail mid-run, then retry</CardTitle>
           <CardDescription>
-            Start an export that fails after N rows, then retry. The buggy
-            engine rewrites from row 0 into the same CSV buffer.
+            Start an export that fails after N rows, then retry. A correct
+            engine clears the CSV buffer so the second attempt is clean.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

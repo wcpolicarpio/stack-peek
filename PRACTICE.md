@@ -9,19 +9,19 @@ Install [pstack](https://github.com/cursor/plugins/tree/main/pstack) first:
 
 Then open a new chat in this repo and try the prompts below. Prefer picking `/poteto-mode` from the `/` menu (Option/Alt+Enter to pin it as a Custom Mode).
 
-## 1. Bug fix (start here)
+## 1. Bug fix (done on main — use to study the trail)
 
-The export engine duplicates rows when a mid-run failure is retried. Repro is already wired: fail after 4 rows, then retry.
+The export engine used to duplicate rows when a mid-run failure was retried. That fix is already landed; the prompt below is what drove it.
 
 ```text
 /poteto-mode the export writes duplicate rows when a retry lands mid-run. repro first, then fix and verify.
 ```
 
-Done means:
+Done means (already true):
 
 - `npm test` passes (including the retry case)
 - UI retry shows `duplicates 0` and written rows = 12
-- You can explain the root cause in one sentence
+- Root cause: reused `CsvBuffer` across attempts without clearing
 
 ## 2. Investigation (read-only)
 

@@ -31,10 +31,7 @@ export function countDataRows(csv: string): number {
   return parseCsvDataRows(csv).length;
 }
 
-/**
- * Mutable CSV buffer for one export job.
- * Intentionally lives across attempts so retries can corrupt it.
- */
+/** Mutable CSV buffer for one export job. Cleared at the start of each attempt. */
 export class CsvBuffer {
   private lines: string[];
 
