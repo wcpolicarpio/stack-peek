@@ -59,18 +59,17 @@ export function ExportLab() {
     const jobsJson = (await jobsRes.json()) as { jobs: Job[] };
     setOrderCount(ordersJson.count);
     setJobs(jobsJson.jobs);
-    if (selected) {
-      const fresh = jobsJson.jobs.find((job) => job.id === selected.id) ?? null;
-      setSelected(fresh);
-    }
-  }, [selected]);
+    setSelected((current) => {
+      if (!current) return current;
+      return jobsJson.jobs.find((job) => job.id === current.id) ?? null;
+    });
+  }, []);
 
   useEffect(() => {
     refresh().catch((err: unknown) => {
       setError(err instanceof Error ? err.message : "load failed");
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- initial load only
-  }, []);
+  }, [refresh]);
 
   async function runAction(fn: () => Promise<void>) {
     setBusy(true);
